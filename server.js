@@ -24,7 +24,10 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: [
+      "http://localhost:3000",
+      "http://wallet-app-fe.s3-website-ap-southeast-2.amazonaws.com",
+    ],
   })
 );
 app.use(bodyParser.json());
