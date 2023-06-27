@@ -18,6 +18,7 @@ const {
 const {
   walletTransaction,
   getTransactions,
+  exportTransactions,
 } = require("./src/controllers/transaction.controller");
 
 const app = express();
@@ -46,6 +47,9 @@ app.post("/transact/:walletId", walletTransaction);
 
 // API endpoint to fetch transactions for a wallet
 app.get("/transactions", getTransactions);
+
+// API to export transactions
+app.get("/transactions/export", exportTransactions);
 
 // API endpoint to get wallet details
 app.get("/wallet/:id", getWallet);

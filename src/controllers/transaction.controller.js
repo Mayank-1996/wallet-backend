@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { Transaction } = require("../models/transaction.model");
 const { Wallet } = require("../models/wallet.model");
+const json2csv = require("json2csv").Parser;
 
 const walletTransaction = async (req, res) => {
   const { walletId } = req.params;
@@ -33,7 +34,7 @@ const walletTransaction = async (req, res) => {
     const updatedWallet = await wallet.save(opts);
 
     if (!updatedWallet) {
-      throw new Error('Failed to update wallet');
+      throw new Error("Failed to update wallet");
     }
     await Promise.all([transaction.save(opts), wallet.save(opts)]);
 
@@ -67,4 +68,32 @@ const getTransactions = (req, res) => {
     });
 };
 
-module.exports = { walletTransaction, getTransactions };
+const exportTransactions = async (req, res) => {
+  try {
+    const transactions = await Transaction.find();
+
+    const fields = [
+      "id",
+      "walletId",
+      "amount",
+      "balance",
+      "description",
+      "date",
+    ];
+    const json2csvParser = new json2csv({ fields });
+
+    const csvData = json2csvParser.parse(transactions);
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=transactions.csv"
+    );
+    res.send(csvData);
+  } catch (error) {
+    console.error("Failed to fetch transactions:", error);
+    res.sendStatus(500);
+  }
+};
+
+module.exports = { walletTransaction, getTransactions, exportTransactions };
